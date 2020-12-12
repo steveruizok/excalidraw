@@ -30,7 +30,7 @@ import { getDefaultAppState } from "../appState";
 
 const defaultAppState = getDefaultAppState();
 
-const CANVAS_PADDING = 20;
+const CANVAS_PADDING = 28;
 
 const DASHARRAY_DASHED = [12, 8];
 const DASHARRAY_DOTTED = [3, 6];
