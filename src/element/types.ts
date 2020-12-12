@@ -109,4 +109,5 @@ export type ExcalidrawLinearElement = _ExcalidrawElementBase &
     endBinding: PointBinding | null;
     startArrowhead: Arrowhead | null;
     endArrowhead: Arrowhead | null;
+    bend: number;
   }>;

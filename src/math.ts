@@ -317,3 +317,37 @@ export const getGridPoint = (
   }
   return [x, y];
 };
+
+const det = (
+  a: number,
+  b: number,
+  c: number,
+  d: number,
+  e: number,
+  f: number,
+  g: number,
+  h: number,
+  i: number,
+) => a * e * i + b * f * g + c * d * h - a * f * h - b * d * i - c * e * g;
+
+export const circleFromThreePoints = (
+  x0: number,
+  y0: number,
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number,
+) => {
+  const a = det(x0, y0, 1, x1, y1, 1, x2, y2, 1);
+  const b = x0 * x0 + y0 * y0;
+  const c = x1 * x1 + y1 * y1;
+  const d = x2 * x2 + y2 * y2;
+  const cx = -det(b, y0, 1, c, y1, 1, d, y2, 1);
+  const cy = det(b, x0, 1, c, x1, 1, d, x2, 1);
+  const cr = -det(b, x0, y0, c, x1, y1, d, x2, y2);
+  return [
+    -cx / (2 * a),
+    -cy / (2 * a),
+    Math.sqrt(cx * cx + cy * cy - 4 * a * cr) / (2 * Math.abs(a)),
+  ];
+};

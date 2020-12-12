@@ -91,24 +91,28 @@ const restoreElement = (
     case "line":
     case "arrow": {
       const {
+        startBinding,
+        endBinding,
+        lastCommittedPoint = null,
         startArrowhead = null,
         endArrowhead = element.type === "arrow" ? "arrow" : null,
+        bend = 0,
+        points = !Array.isArray(element.points) || element.points.length < 2
+          ? [
+              [0, 0],
+              [element.width, element.height],
+            ]
+          : element.points,
       } = element;
 
       return restoreElementWithProperties(element, {
-        startBinding: element.startBinding,
-        endBinding: element.endBinding,
-        points:
-          // migrate old arrow model to new one
-          !Array.isArray(element.points) || element.points.length < 2
-            ? [
-                [0, 0],
-                [element.width, element.height],
-              ]
-            : element.points,
-        lastCommittedPoint: null,
+        startBinding,
+        endBinding,
+        points,
+        lastCommittedPoint,
         startArrowhead,
         endArrowhead,
+        bend,
       });
     }
     // generic elements

@@ -23,7 +23,7 @@ import {
   getFontFamilyString,
   isRTL,
 } from "../utils";
-import { isPathALoop } from "../math";
+import { isPathALoop, circleFromThreePoints } from "../math";
 import rough from "roughjs/bin/rough";
 import { Zoom } from "../types";
 import { getDefaultAppState } from "../appState";
@@ -338,6 +338,40 @@ const generateElementShape = (
         if (element.type === "arrow") {
           const { startArrowhead = null, endArrowhead = "arrow" } = element;
 
+          if (element.points.length === 2) {
+            const [x0, y0] = element.points[0];
+            const [x1, y1] = element.points[1];
+
+            const bow = 90;
+            const dx = x1 - x0;
+            const dy = y1 - y0;
+            const cx = x0 + dx / 2;
+            const cy = y0 + dy / 2;
+            const angle = Math.atan2(y1 - y0, x1 - x0);
+
+            const TAU = Math.PI * 2;
+
+            // Create a anchor point based on the arc and distance
+            const anchorAngle = angle + (bow > 0 ? Math.PI / 2 : -Math.PI / 2);
+            const ax = Math.cos(anchorAngle) * Math.abs(bow) + cx;
+            const ay = Math.sin(anchorAngle) * Math.abs(bow) + cy;
+
+            const [x, y, r] = circleFromThreePoints(x0, y0, x1, y1, ax, ay);
+
+            let sa = (TAU + Math.atan2(y0 - y, x0 - x)) % TAU;
+            let ea = (TAU + Math.atan2(y1 - y, x1 - x)) % TAU;
+
+            if (ea < sa) {
+              const t = sa;
+              sa = ea;
+              ea = t;
+            }
+
+            shape.push(
+              generator.arc(x, y, r * 2, r * 2, sa, ea, false, options),
+            );
+          }
+
           function getArrowheadShapes(
             element: ExcalidrawLinearElement,
             shape: Drawable[],
@@ -407,6 +441,7 @@ const generateElementShape = (
             shape.push(...shapes);
           }
         }
+
         break;
       }
       case "text": {
