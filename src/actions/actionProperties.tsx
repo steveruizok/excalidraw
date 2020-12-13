@@ -430,6 +430,70 @@ export const actionChangeOpacity = register({
   ),
 });
 
+export const actionChangeBend = register({
+  name: "changeBend",
+  perform: (elements, appState, value: number) => {
+    return {
+      elements: changeProperty(elements, appState, (el) => {
+        if (isLinearElement(el)) {
+          // trackEvent(
+          //   EVENT_CHANGE,
+          //   "bow",
+          //   value,
+          // );
+          const element: ExcalidrawLinearElement = newElementWith(el, {
+            bend: value,
+          });
+          return element;
+        }
+
+        return el;
+      }),
+      appState: {
+        ...appState,
+        // currentItemArrowheads: {
+        //   ...appState.currentItemArrowheads,
+        //   [value.position]: value.type,
+        // },
+      },
+      commitToHistory: true,
+    };
+  },
+  PanelComponent: ({ elements, appState, updateData }) => (
+    <label className="control-label">
+      {"Bend"}
+      <input
+        type="range"
+        min="-200"
+        max="200"
+        step="1"
+        onChange={(event) => updateData(+event.target.value)}
+        onWheel={(event) => {
+          event.stopPropagation();
+          const target = event.target as HTMLInputElement;
+          const STEP = 10;
+          const MAX = 100;
+          const MIN = 0;
+          const value = +target.value;
+
+          if (event.deltaY < 0 && value < MAX) {
+            updateData(value + STEP);
+          } else if (event.deltaY > 0 && value > MIN) {
+            updateData(value - STEP);
+          }
+        }}
+        value={
+          getFormValue(elements, appState, (element) =>
+            isLinearElement(element) && canHaveArrowheads(element.type)
+              ? element.bend
+              : 0,
+          ) ?? undefined
+        }
+      />
+    </label>
+  ),
+});
+
 export const actionChangeFontSize = register({
   name: "changeFontSize",
   perform: (elements, appState, value) => {

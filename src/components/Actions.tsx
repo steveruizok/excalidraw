@@ -81,7 +81,10 @@ export const SelectedShapeActions = ({
 
       {(canHaveArrowheads(elementType) ||
         targetElements.some((element) => canHaveArrowheads(element.type))) && (
-        <>{renderAction("changeArrowhead")}</>
+        <>
+          {renderAction("changeArrowhead")}
+          {renderAction("changeBend")}
+        </>
       )}
 
       {renderAction("changeOpacity")}

@@ -243,7 +243,7 @@ export const getArrowheadPoints = (
   // Return points
   const [x3, y3] = rotate(xs, ys, x2, y2, (-angle * Math.PI) / 180);
   const [x4, y4] = rotate(xs, ys, x2, y2, (angle * Math.PI) / 180);
-  return [x2, y2, x3, y3, x4, y4];
+  return [x2, y2, x3, y3, x4, y4, xs, ys, ...p2, ...p3];
 };
 
 const getLinearElementRotatedBounds = (

@@ -30,7 +30,7 @@ import { getDefaultAppState } from "../appState";
 
 const defaultAppState = getDefaultAppState();
 
-const CANVAS_PADDING = 20;
+const CANVAS_PADDING = 200;
 
 const DASHARRAY_DASHED = [12, 8];
 const DASHARRAY_DOTTED = [3, 6];
@@ -336,40 +336,57 @@ const generateElementShape = (
 
         // add lines only in arrow
         if (element.type === "arrow") {
-          const { startArrowhead = null, endArrowhead = "arrow" } = element;
+          let {
+            startArrowhead = null,
+            endArrowhead = "arrow",
+            bend = 0,
+          } = element;
 
-          if (element.points.length === 2) {
+          if (element.points.length === 2 && Math.abs(bend) > 32) {
+            if (bend < 0) {
+              [endArrowhead, startArrowhead] = [startArrowhead, endArrowhead];
+            }
+
             const [x0, y0] = element.points[0];
             const [x1, y1] = element.points[1];
 
-            const bow = 90;
+            const bow = -bend;
             const dx = x1 - x0;
             const dy = y1 - y0;
-            const cx = x0 + dx / 2;
-            const cy = y0 + dy / 2;
+            const mpx = x0 + dx / 2;
+            const mpy = y0 + dy / 2;
             const angle = Math.atan2(y1 - y0, x1 - x0);
 
             const TAU = Math.PI * 2;
 
             // Create a anchor point based on the arc and distance
             const anchorAngle = angle + (bow > 0 ? Math.PI / 2 : -Math.PI / 2);
-            const ax = Math.cos(anchorAngle) * Math.abs(bow) + cx;
-            const ay = Math.sin(anchorAngle) * Math.abs(bow) + cy;
+            const ax = Math.cos(anchorAngle) * Math.abs(bow) + mpx;
+            const ay = Math.sin(anchorAngle) * Math.abs(bow) + mpy;
 
             const [x, y, r] = circleFromThreePoints(x0, y0, x1, y1, ax, ay);
 
-            let sa = (TAU + Math.atan2(y0 - y, x0 - x)) % TAU;
-            let ea = (TAU + Math.atan2(y1 - y, x1 - x)) % TAU;
+            let ea = (TAU + Math.atan2(y0 - y, x0 - x)) % TAU;
+            let sa = (TAU + Math.atan2(y1 - y, x1 - x)) % TAU;
 
+            if (bow < 0) {
+              [sa, ea] = [ea, sa];
+            }
             if (ea < sa) {
-              const t = sa;
-              sa = ea;
-              ea = t;
+              ea += TAU;
             }
 
-            shape.push(
-              generator.arc(x, y, r * 2, r * 2, sa, ea, false, options),
-            );
+            shape = [
+              generator.arc(x, y, r * 2, r * 2, sa, ea, false, {
+                ...options,
+                roughness: 0,
+                disableMultiStroke: true,
+              }),
+              generator.arc(x, y, r * 2, r * 2, sa, ea, false, {
+                ...options,
+                disableMultiStroke: true,
+              }),
+            ];
           }
 
           function getArrowheadShapes(
@@ -411,6 +428,7 @@ const generateElementShape = (
               // for solid/dashed, keep solid arrow cap
               delete options.strokeLineDash;
             }
+
             return [
               generator.line(x3, y3, x2, y2, options),
               generator.line(x4, y4, x2, y2, options),
@@ -424,6 +442,7 @@ const generateElementShape = (
               "start",
               startArrowhead,
             );
+
             shape.push(...shapes);
           }
 
@@ -438,6 +457,7 @@ const generateElementShape = (
               "end",
               endArrowhead,
             );
+
             shape.push(...shapes);
           }
         }

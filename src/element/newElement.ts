@@ -228,7 +228,7 @@ export const newLinearElement = (
     endBinding: null,
     startArrowhead: opts.startArrowhead,
     endArrowhead: opts.endArrowhead,
-    bend: 20,
+    bend: 0,
   };
 };
 
