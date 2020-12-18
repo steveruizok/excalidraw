@@ -71,6 +71,7 @@ export class API {
     strokeWidth?: ExcalidrawGenericElement["strokeWidth"];
     strokeStyle?: ExcalidrawGenericElement["strokeStyle"];
     strokeSharpness?: ExcalidrawGenericElement["strokeSharpness"];
+    radius?: ExcalidrawGenericElement["radius"];
     roughness?: ExcalidrawGenericElement["roughness"];
     opacity?: ExcalidrawGenericElement["opacity"];
     // text props
@@ -101,6 +102,7 @@ export class API {
       strokeStyle: rest.strokeStyle ?? appState.currentItemStrokeStyle,
       strokeSharpness:
         rest.strokeSharpness ?? appState.currentItemStrokeSharpness,
+      radius: rest.radius ?? appState.currentItemRadius,
       roughness: rest.roughness ?? appState.currentItemRoughness,
       opacity: rest.opacity ?? appState.currentItemOpacity,
     };

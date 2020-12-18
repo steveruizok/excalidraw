@@ -368,6 +368,7 @@ export const getResizedElementAbsoluteCoords = (
           generateRoughOptions(element),
         )
       : gen.curve(points as [number, number][], generateRoughOptions(element));
+
   const ops = getCurvePathOps(curve);
   const [minX, minY, maxX, maxY] = getMinMaxXYFromCurvePathOps(ops);
   return [

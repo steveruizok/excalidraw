@@ -54,6 +54,7 @@ const restoreElementWithProperties = <T extends ExcalidrawElement>(
     strokeSharpness:
       element.strokeSharpness ??
       (isLinearElementType(element.type) ? "round" : "sharp"),
+    radius: element.radius ?? 0,
     boundElementIds: element.boundElementIds ?? [],
   };
 

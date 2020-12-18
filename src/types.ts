@@ -55,6 +55,7 @@ export type AppState = {
   currentItemFillStyle: ExcalidrawElement["fillStyle"];
   currentItemStrokeWidth: number;
   currentItemStrokeStyle: ExcalidrawElement["strokeStyle"];
+  currentItemRadius: number;
   currentItemRoughness: number;
   currentItemOpacity: number;
   currentItemFontFamily: FontFamily;

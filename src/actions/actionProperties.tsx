@@ -569,7 +569,14 @@ export const actionChangeTextAlign = register({
 
 export const actionChangeSharpness = register({
   name: "changeSharpness",
-  perform: (elements, appState, value) => {
+  perform: (
+    elements,
+    appState,
+    {
+      strokeSharpness = appState.currentItemStrokeSharpness,
+      radius = appState.currentItemRadius,
+    },
+  ) => {
     const targetElements = getTargetElements(
       getNonDeletedElements(elements),
       appState,
@@ -580,20 +587,22 @@ export const actionChangeSharpness = register({
     const shouldUpdateForLinearElements = targetElements.length
       ? targetElements.every(isLinearElement)
       : isLinearElementType(appState.elementType);
-    trackEvent(EVENT_CHANGE, "edge", value);
+    // trackEvent(EVENT_CHANGE, "edge", value);
     return {
       elements: changeProperty(elements, appState, (el) =>
         newElementWith(el, {
-          strokeSharpness: value,
+          strokeSharpness,
+          radius,
         }),
       ),
       appState: {
         ...appState,
+        currentItemRadius: radius,
         currentItemStrokeSharpness: shouldUpdateForNonLinearElements
-          ? value
+          ? strokeSharpness
           : appState.currentItemStrokeSharpness,
         currentItemLinearStrokeSharpness: shouldUpdateForLinearElements
-          ? value
+          ? strokeSharpness
           : appState.currentItemLinearStrokeSharpness,
       },
       commitToHistory: true,
@@ -602,32 +611,66 @@ export const actionChangeSharpness = register({
   PanelComponent: ({ elements, appState, updateData }) => (
     <fieldset>
       <legend>{t("labels.edges")}</legend>
-      <ButtonIconSelect
-        group="edges"
-        options={[
-          {
-            value: "sharp",
-            text: t("labels.sharp"),
-            icon: <EdgeSharpIcon appearance={appState.appearance} />,
-          },
-          {
-            value: "round",
-            text: t("labels.round"),
-            icon: <EdgeRoundIcon appearance={appState.appearance} />,
-          },
-        ]}
-        value={getFormValue(
-          elements,
-          appState,
-          (element) => element.strokeSharpness,
-          (canChangeSharpness(appState.elementType) &&
-            (isLinearElementType(appState.elementType)
-              ? appState.currentItemLinearStrokeSharpness
-              : appState.currentItemStrokeSharpness)) ||
-            null,
+      <div className="edgesStack">
+        <ButtonIconSelect
+          group="edges"
+          options={[
+            {
+              value: "sharp",
+              text: t("labels.sharp"),
+              icon: <EdgeSharpIcon appearance={appState.appearance} />,
+            },
+            {
+              value: "round",
+              text: t("labels.round"),
+              icon: <EdgeRoundIcon appearance={appState.appearance} />,
+            },
+          ]}
+          value={getFormValue(
+            elements,
+            appState,
+            (element) => element.strokeSharpness,
+
+            (canChangeSharpness(appState.elementType) &&
+              (isLinearElementType(appState.elementType)
+                ? appState.currentItemLinearStrokeSharpness
+                : appState.currentItemStrokeSharpness)) ||
+              null,
+          )}
+          onChange={(value) => updateData({ strokeSharpness: value })}
+        />
+        {appState.currentItemStrokeSharpness === "round" && (
+          <input
+            type="range"
+            min="0"
+            max="100"
+            step="1"
+            onChange={(event) => updateData({ radius: +event.target.value })}
+            onWheel={(event) => {
+              event.stopPropagation();
+              const target = event.target as HTMLInputElement;
+              const STEP = 1;
+              const MAX = 100;
+              const MIN = 0;
+              const value = +target.value;
+
+              if (event.deltaY < 0 && value < MAX) {
+                updateData({ radius: value + STEP });
+              } else if (event.deltaY > 0 && value > MIN) {
+                updateData({ radius: value - STEP });
+              }
+            }}
+            value={
+              getFormValue(
+                elements,
+                appState,
+                (element) => element.radius,
+                appState.currentItemRadius,
+              ) ?? undefined
+            }
+          />
         )}
-        onChange={(value) => updateData(value)}
-      />
+      </div>
     </fieldset>
   ),
 });

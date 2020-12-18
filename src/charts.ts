@@ -165,6 +165,7 @@ export const renderSpreadsheet = (
     roughness: 1,
     strokeColor: colors.elementStroke[0],
     strokeSharpness: "sharp",
+    radius: 0,
     strokeStyle: "solid",
     strokeWidth: 1,
     verticalAlign: "middle",

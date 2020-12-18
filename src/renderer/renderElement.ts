@@ -272,7 +272,9 @@ const generateElementShape = (
         if (element.strokeSharpness === "round") {
           const w = element.width;
           const h = element.height;
-          const r = Math.min(w, h) * 0.25;
+          const r = element.radius
+            ? Math.min(Math.min(w, h) * 0.5, element.radius)
+            : Math.min(w, h) * 0.25;
           shape = generator.path(
             `M ${r} 0 L ${w - r} 0 Q ${w} 0, ${w} ${r} L ${w} ${
               h - r

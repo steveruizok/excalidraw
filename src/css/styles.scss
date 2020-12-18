@@ -89,6 +89,14 @@
       position: relative;
     }
 
+    .edgesStack {
+      display: flex;
+
+      input[type="range"] {
+        flex-grow: 2;
+      }
+    }
+
     .buttonList {
       flex-wrap: wrap;
 
